@@ -22,6 +22,19 @@ it needs at least one halo catalog files, such as .amgiga files or .AHF files.
 
 for any precomputed properties like H2, you will also need to include .H2 files. 
 
+for best resutls make sure there are no unexpected folders that contains any kind of snaphot data at all, it might even be best to make sure the only folders are snapshot files. if everything is dumped in the root files, make sure any files you don't want processes do not exist in your folder of symlinks 
+
+tangos is also looking for specific files names for catalogs and properties. 
+propoerties are pretty simple with sim_name_snapshot_number.yourproperties
+amiga likewise sim_name_snapshot_number.amiga.stat
+but ahf files are a little tricker example
+sim_name_snapshot_number.z0.000.AHF_halos
+
+in order for tangos to see your files properly make sure there are not extra components in the name, for example 
+sim_name_snapshot_number.0000.z0.000.AHF_halos will confuse tangos 
+
+it is possible to get around the files names by modifying tangos input handlers, but in my experience this is much more difficult. 
+
 
 #very important
 If you are interested in tracking halo properties across timesteps you will need to make sure that there is a .iord file for every snapshot. This is required for pynbody to be able to link halos across snapshots. 
