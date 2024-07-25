@@ -1,54 +1,73 @@
-# Tangos_setup_guide
-This is the information that I have learned to setup simulation files run with changa, using tangos and pynbody
+# Tangos Setup Guide
 
-tangos expects files in a certain file format,
+This guide provides information on setting up simulation files run with ChaNGa, using Tangos and Pynbody.
 
-I have worked with two examples. 
-one looked like /sim_folder/sim_snapshot_folder/snapshot_data
-where sim level param files are in the root dir
+## File Structure
 
-I have also worked with files where everything is dumped into the root dir, no organization by timestep. 
+Tangos expects files in a specific format. Two common structures are:
 
+1. `/sim_folder/sim_snapshot_folder/snapshot_data`
+   - Simulation-level parameter files are in the root directory.
 
-what files does tangos need?
+2. All files in the root directory without organization by timestep.
 
-the most basic files that tangos needs is the snapshot data, as well as a sim level and snapshot .param files. make sure there are no duplicate snapshot files. for example I am working with data that has ahf run at 200 overdensity rather than 178, where the 200 data was organized in another subfolder in a snapshot folder. This causes tangos to add multiple snapshots for each timestep, and tangos cannot find the .param file for the ahf_200 files since it is 2 levels higher and by default it does not look there. 
+## Required Files
 
-there are 2 ways then to tell tangos what data you want to use, create a custom tangos handler, that tells tangos what files to look for and where the .param file is (hard) or create a copy of your simulution folder using symlinks(reccomended)
-note that pynbody/tangos currently cannot handle symlinked folders, as it will try to load it as a file and cause an error. 
+At minimum, Tangos needs:
 
-now what files does tangos need specifically to be able to run effective analysis?
-it needs at least one halo catalog files, such as .amgiga files or .AHF files.
+- Snapshot data
+- Simulation-level .param file
+- Snapshot-level .param file
 
-for any precomputed properties like H2, you will also need to include .H2 files. 
+Ensure there are no duplicate snapshot files.
 
-for best resutls make sure there are no unexpected folders that contains any kind of snaphot data at all, it might even be best to make sure the only folders are snapshot files. if everything is dumped in the root files, make sure any files you don't want processes do not exist in your folder of symlinks 
+## Additional Requirements
 
-tangos is also looking for specific files names for catalogs and properties. 
-propoerties are pretty simple with sim_name_snapshot_number.yourproperties
-amiga likewise sim_name_snapshot_number.amiga.stat
-but ahf files are a little tricker example
-sim_name_snapshot_number.z0.000.AHF_halos
+- At least one halo catalog file (e.g., .amgiga or .AHF files)
+- For precomputed properties (like H2), include corresponding files (e.g., .H2 files)
+- .iord file for every snapshot (crucial for tracking halo properties across timesteps)
 
-in order for tangos to see your files properly make sure there are not extra components in the name, for example 
-sim_name_snapshot_number.0000.z0.000.AHF_halos will confuse tangos 
+## File Naming Conventions
 
-it is possible to get around the files names by modifying tangos input handlers, but in my experience this is much more difficult. 
+Tangos looks for specific file names:
 
+- Properties: `sim_name_snapshot_number.yourproperties`
+- Amiga: `sim_name_snapshot_number.amiga.stat`
+- AHF: `sim_name_snapshot_number.z0.000.AHF_halos`
 
-#very important
-If you are interested in tracking halo properties across timesteps you will need to make sure that there is a .iord file for every snapshot. This is required for pynbody to be able to link halos across snapshots. 
+Avoid extra components in filenames (e.g., `sim_name_snapshot_number.0000.z0.000.AHF_halos` will confuse Tangos).
 
+## Setup Options
 
-#now that you have prepared your simulation files, how to construct tangos database efficiently?
+Two main approaches:
 
-first add your sim using tangos add sim_folder
-recommened options --backend multiprocessing-N
-where N is the number of threads you want to use, for the add function, it runs fairly fast at 10 
-tangos add sim_folder--backend multiprocessing-10
+1. Create a custom Tangos handler (advanced)
+2. Create a copy of your simulation folder using symlinks (recommended)
 
-and likewise to create links 
-tangos link --sim sim_folder --backend multiprocessing-N
+Note: Pynbody/Tangos cannot handle symlinked folders.
 
-links takes a while, so you may want to run this with as many cores as you can if you have sufficent ram, in my limited testing around 8GB/core gives sufficent performancces, if you have 16GB of ram I would reccomend to keep N around 4, even if you have more cores
+## Best Practices
 
+- Ensure no unexpected folders contain snapshot data
+- For root directory setups, remove unwanted files from your folder of symlinks
+- Avoid duplicate snapshots (e.g., AHF data at different overdensities)
+
+## Creating Tangos Database
+
+1. Add your simulation:
+   ```
+   tangos add sim_folder --backend multiprocessing-N
+   ```
+
+2. Create links:
+   ```
+   tangos link --sim sim_folder --backend multiprocessing-N
+   ```
+   
+   N is the number of threads. For linking, use as many cores as possible, considering RAM limitations (approx. 8GB/core).
+
+## Performance Considerations
+
+- For adding simulations, 10 threads usually suffice
+- For linking, maximize core usage based on available RAM
+- With 16GB RAM, recommend keeping N around 4, even with more cores available
