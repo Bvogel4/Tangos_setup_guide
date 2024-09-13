@@ -1,7 +1,3 @@
-Pynbody Installation Guide
-
-Windows Installation
-
 1. First, attempt to install on Windows assuming you have already downloaded anaconda:
 
 
@@ -34,7 +30,7 @@ Windows Installation
 
 2. If the Windows installation fails, try using windows subsytem for linux (WSL):
 
-WSL Installation
+WSL Installation:
 
 1. Install WSL:
    - Follow the directions at https://learn.microsoft.com/en-us/windows/wsl/install
