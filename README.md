@@ -195,5 +195,6 @@ it may be convieient to to compute a property for only progenitors of a certain 
 
 you can do that like this 
 ```
-tangos write ba_s Mvir reff --sim r431.romulus25.3072g1HsbBH --include-only="latest().halo_number()==2" --include-only="t()>10" --backend multiprocessing-10 ```
+tangos write ba_s Mvir reff --sim r431.romulus25.3072g1HsbBH --include-only="latest().halo_number()==2" --include-only="t()>10" --backend multiprocessing-10
+```
 
